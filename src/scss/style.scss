@@ -1,0 +1,13 @@
+@import 'normalize';
+
+@media screen and (max-width: 500px) {
+	@import 'mobile';
+}
+
+@media screen and (min-width: 501px) {
+	@import 'tablet';
+}
+
+@media screen and (min-width: 1024px) {
+	@import 'desktop';
+}
