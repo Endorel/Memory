@@ -1,0 +1,53 @@
+
+body {
+	background: $background;
+}
+
+div#head {
+	width: 650px;
+	height: 95px;
+	margin: 0px auto;
+
+	#title {
+		float: left;
+		width: auto;
+
+		h1 {
+			margin-top: 0.2em;
+			margin-bottom: 0.2em;
+			font-family: $memoryfont;
+		}
+	}
+
+	#points {
+		float: right;
+		width: auto;
+
+		h2{
+			margin-top: 0.5em;
+			margin-bottom: 0.2em;
+			font-family: $pointsfont;
+		}
+	}
+}
+
+div#memory_board {
+	background: $background;
+	width: 650px;
+	height: 700px;
+	padding: 9px; 
+	margin: 0px auto;
+}
+
+div#memory_board > div {
+	background: url(../sand.jpg) no-repeat;
+	border: #000 1px solid;
+	width: 61px;
+	height: 61px;
+	margin: 8px;
+	padding: 12px;
+	font-family: $tilefont;
+	font-size: 48px;
+	text-align: center;
+	display: inline-block;
+}

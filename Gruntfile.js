@@ -1,6 +1,12 @@
 
 module.exports = function (grunt) { //Rör ej denna!
 
+	//Ladda
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-sass');
+	grunt.loadNpmTasks('grunt-postcss');
+	grunt.loadNpmTasks('grunt-contrib-watch');
+
 	//Konfig
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
@@ -49,7 +55,7 @@ module.exports = function (grunt) { //Rör ej denna!
 					require('autoprefixer')({browsers: 'last 2 versions'}),
 					require('cssnano')()
 				]
-			}
+			},
 			build: {
 				src: 'css/*.css'
 			}
@@ -67,11 +73,7 @@ module.exports = function (grunt) { //Rör ej denna!
 		}
 	});
 
-	//Ladda
-	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-sass');
-	grunt.loadNpmTasks('grunt-postcss');
-	grunt.loadNpmTasks('grunt-contrib-watch');
+	
 
 	//Registrera
 	grunt.registerTask('default', ["uglify:dev", "sass:dev"]);

@@ -1,19 +1,52 @@
-div#memory_board {
-	background: #CCC;
-	border: #999 1px solid;
+
+body {
+	background: $background;
+}
+
+div#head {
 	width: 800px;
-	height: 540px;
+	height: 65px;
+	margin: 0px auto;
+
+	#title {
+		float: left;
+		width: auto;
+		
+		h1 {
+			margin-top: 0.2em;
+			margin-bottom: 0.2em;
+			font-family: $memoryfont;
+		}
+	}
+
+	#points {
+		float: right;
+		width: auto;
+		
+		h2{
+			margin-top: 0.5em;
+			margin-bottom: 0.2em;
+			font-family: $pointsfont;
+		}
+	}
+}
+
+div#memory_board {
+	background: $background;
+	width: 960px;
+	height: 580px;   
 	padding: 24px;
 	margin: 0px auto;
 }
 
 div#memory_board > div {
-	background: url(sand.jpg) no-repeat;
+	background: url(../sand.jpg) no-repeat;
 	border: #000 1px solid;
 	width: 71px;
 	height: 71px;
 	margin: 10px;
 	padding: 20px;
+	font-family: $tilefont;
 	font-size: 64px;
 	text-align: center;
 	display: inline-block;
