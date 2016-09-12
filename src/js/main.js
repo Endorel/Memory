@@ -13,7 +13,7 @@ var memory_tile_ids = [];
 var tiles_flipped = 0;
 
 var mq_mobile = window.matchMedia( "(max-width: 668px)" );
-var mq_tablet = window.matchMedia( "(min-width: 669px)" );
+var mq_tablet = window.matchMedia( "(min-width: 669px) and (max-width: 1023px)" );
 var mq_desktop = window.matchMedia( "(min-width: 1024px)" );
 
 if (mq_mobile.matches) {
@@ -29,7 +29,7 @@ if (mq_mobile.matches) {
 
 	memory_array = ['A', 'A', 'B', 'B', 'C', 'C', 'D', 'D', 'E', 'E', 'F', 'F', 'G', 'G', 'H', 'H', 
 			'I', 'I', 'J', 'J', 'K', 'K', 'L', 'L', 'M', 'M', 'N', 'N', 'O', 'O', 'P', 'P', 'Q', 'Q',
-			 'R', 'R', 'S', 'S', 'T', 'T', 'U', 'U', 'V', 'V', 'W', 'W', 'X', 'X', 'Y', 'Y', 'Z', 'Z'];
+			 'R', 'R', 'S', 'S', 'T', 'T'];
 };
 
 localStorage.setItem('score1', 0);
