@@ -49,5 +49,6 @@ div#memory_board > div {
 	font-family: $tilefont;
 	font-size: 48px;
 	text-align: center;
-	display: inline-block;
+	display: block;
+	float: left;
 }

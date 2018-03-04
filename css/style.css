@@ -402,7 +402,8 @@ textarea {
     font-family: "Play", sans-serif;
     font-size: 42px;
     text-align: center;
-    display: inline-block; } }
+    display: block;
+    float: left; } }
 
 @media only screen and (min-width: 669px) and (max-width: 1024px) {
   body {
@@ -441,7 +442,8 @@ textarea {
     font-family: "Play", sans-serif;
     font-size: 48px;
     text-align: center;
-    display: inline-block; } }
+    display: block;
+    float: left; } }
 
 @media only screen and (min-width: 1025px) {
   body {
