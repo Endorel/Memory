@@ -3,6 +3,7 @@
 
 window.addEventListener('load', newBoard);
 window.addEventListener('load', displayPoints);
+window.addEventListener('load', displayHighScores);
 
 
 
@@ -33,9 +34,14 @@ if (mq_mobile.matches) {
 			 'R', 'R', 'S', 'S', 'T', 'T'];
 };
 
-localStorage.setItem('score1', 0);
-localStorage.setItem('score2', 0);
-localStorage.setItem('score3', 0);
+//High scores are kept between visits as a JSON array of numbers, highest first
+var HIGH_SCORE_KEY = 'highscores';
+var HIGH_SCORE_COUNT = 3;
+
+//Remove the keys used by older versions, which were reset on every page load
+localStorage.removeItem('score1');
+localStorage.removeItem('score2');
+localStorage.removeItem('score3');
 
 
 Array.prototype.memory_tile_shuffle = function() { //use prototype to add a shuffle method to the array object
@@ -140,29 +146,74 @@ function displayPoints() {
 	document.getElementById("points").innerHTML = "<h2>Points: " + points + "</h2>";
 }
 
-function highScore () {
-	console.log('higscore');
-	var score1 = localStorage.getItem("score1");
-	var score2 = localStorage.getItem("score2");
-	var score3 = localStorage.getItem("score3");
+function loadHighScores() {
+	var scores;
+	try {
+		scores = JSON.parse(localStorage.getItem(HIGH_SCORE_KEY));
+	} catch (e) {
+		return [];
+	}
+	if (!Array.isArray(scores)) {
+		return [];
+	}
+	//Ignore anything that isn't a number, so a damaged value can't break the list
+	return scores.filter(function (score) {
+		return typeof score === 'number' && isFinite(score);
+	}).slice(0, HIGH_SCORE_COUNT);
+}
 
-	var points = localStorage.getItem("points");
+//Returns the place (0 = first) the score got on the list, or -1 if it didn't make it
+function addHighScore(points) {
+	var scores = loadHighScores();
 
-	if (points > score1) {
-		localStorage.setItem('score1', points);
-		alert("Congratulations! You got the highest score! You got " + points + " points.");
-		return;
-	}else if (points > score2) {
-		localStorage.setItem('score2', points);
-		alert("Congratulations! You got 2nd place! You got " + points + " points.");
-		return;		
-	} else if (points > score3) {
-		localStorage.setItem('score3', points);
-		alert("Congratulations! You got 3rd place! You got " + points + " points.");
-		return;
-	}else{
-		alert("You got " + points + " points. You did not make the high-score list.");
+	//A new score goes below any equal scores, so a tie never pushes an older score down
+	var place = 0;
+	while (place < scores.length && scores[place] >= points) {
+		place++;
+	}
+	if (points <= 0 || place >= HIGH_SCORE_COUNT) {
+		return -1;
+	}
+
+	scores.splice(place, 0, points);
+	localStorage.setItem(HIGH_SCORE_KEY, JSON.stringify(scores.slice(0, HIGH_SCORE_COUNT)));
+	return place;
+}
+
+function displayHighScores() {
+	var scores = loadHighScores();
+	var container = document.getElementById('highscores');
+	var heading = document.createElement('h2');
+	heading.textContent = 'High scores';
+	container.innerHTML = '';
+	container.appendChild(heading);
+
+	if (scores.length == 0) {
+		var empty = document.createElement('p');
+		empty.textContent = 'No high scores yet.';
+		container.appendChild(empty);
 		return;
 	}
 
+	var list = document.createElement('ol');
+	for (var i = 0; i < scores.length; i++) {
+		var item = document.createElement('li');
+		item.textContent = scores[i] + ' points';
+		list.appendChild(item);
+	}
+	container.appendChild(list);
+}
+
+function highScore () {
+	var points = parseInt(localStorage.getItem('points'), 10) || 0;
+	var place = addHighScore(points);
+	var placeNames = ['the highest score', '2nd place', '3rd place'];
+
+	displayHighScores();
+
+	if (place == -1) {
+		alert("You got " + points + " points. You did not make the high-score list.");
+	} else {
+		alert("Congratulations! You got " + placeNames[place] + "! You got " + points + " points.");
+	}
 }

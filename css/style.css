@@ -13,7 +13,6 @@
 	--head-height: 85px;
 	--title-margin: 0;
 	--board-width: 320px;
-	--board-height: 580px;
 	--board-padding: 3px;
 	--tile-size: 51px;
 	--tile-margin: 5px;
@@ -28,7 +27,6 @@
 		--head-height: 95px;
 		--title-margin: 0.2em 0;
 		--board-width: 650px;
-		--board-height: 700px;
 		--board-padding: 9px;
 		--tile-size: 61px;
 		--tile-margin: 8px;
@@ -44,7 +42,6 @@
 		--head-height: 65px;
 		--title-margin: 0;
 		--board-width: 1000px;
-		--board-height: 780px;
 		--board-padding: 24px;
 		--tile-size: 65px;
 		--tile-margin: 7px;
@@ -91,7 +88,7 @@ body {
 
 #memory_board {
 	width: var(--board-width);
-	height: var(--board-height);
+	display: flow-root; /* contain the floated tiles */
 	padding: var(--board-padding);
 	margin: 0 auto;
 	background: var(--background);
@@ -108,4 +105,20 @@ body {
 	font-family: var(--tile-font);
 	font-size: var(--tile-font-size);
 	text-align: center;
+}
+
+#highscores {
+	width: var(--head-width);
+	margin: 0 auto 2em;
+	font-family: var(--tile-font);
+	font-size: 1.25em;
+}
+
+#highscores h2 {
+	margin-bottom: 0.2em;
+	font-family: var(--points-font);
+}
+
+#highscores ol {
+	margin: 0;
 }
