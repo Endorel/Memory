@@ -8,6 +8,10 @@ A browser memory (pair-matching) game written in plain JavaScript and CSS. Code 
 
 **The project uses no libraries, frameworks, build step or npm.** Keep it that way: don't add dependencies, preprocessors (Sass, etc.), bundlers or transpilers. The only external resource is Google Fonts, which `css/style.css` loads.
 
+## Git workflow
+
+The default branch is `main`. A GitHub ruleset blocks direct pushes, force pushes and deletion of `main`, so every change goes through a pull request: work on a branch, push it, and open a PR. No approvals are required, so the owner merges their own PRs. The ruleset only works because the repo is public; the owner is on GitHub's free plan, which doesn't enforce rulesets on private repos.
+
 ## Running
 
 Open `index.html` in a browser. The files the browser loads are the source files: `js/main.js` and `css/style.css`, so there is nothing to build. There are no tests and no linter.
