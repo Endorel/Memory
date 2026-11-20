@@ -28,19 +28,6 @@ function currentLayout() {
 	return 'mobile';
 }
 
-function tilesForLayout(layout) {
-	if (layout == 'desktop') {
-		return ['A', 'A', 'B', 'B', 'C', 'C', 'D', 'D', 'E', 'E', 'F', 'F', 'G', 'G', 'H', 'H',
-			'I', 'I', 'J', 'J', 'K', 'K', 'L', 'L', 'M', 'M', 'N', 'N', 'O', 'O', 'P', 'P', 'Q', 'Q',
-			 'R', 'R', 'S', 'S', 'T', 'T'];
-	} else if (layout == 'tablet') {
-		return ['A', 'A', 'B', 'B', 'C', 'C', 'D', 'D', 'E', 'E', 'F', 'F', 'G', 'G', 'H', 'H',
-			'I', 'I', 'J', 'J', 'K', 'K', 'L', 'L', 'M', 'M', 'N', 'N', 'O', 'O', 'P', 'P', 'Q', 'Q', 'R', 'R'];
-	}
-	return ['A', 'A', 'B', 'B', 'C', 'C', 'D', 'D', 'E', 'E', 'F', 'F', 'G', 'G', 'H', 'H',
-		'I', 'I', 'J', 'J'];
-}
-
 //When the window is resized or the device rotated into another layout, build a
 //board with the right number of tiles. A game in progress is left alone so no
 //progress is lost; the next board will use the new layout.
@@ -54,23 +41,11 @@ mq_desktop.addEventListener('change', onLayoutChange);
 
 //High scores are kept between visits as a JSON array of numbers, highest first
 var HIGH_SCORE_KEY = 'highscores';
-var HIGH_SCORE_COUNT = 3;
 
 //Remove the keys used by older versions, which were reset on every page load
 localStorage.removeItem('score1');
 localStorage.removeItem('score2');
 localStorage.removeItem('score3');
-
-
-Array.prototype.memory_tile_shuffle = function() { //use prototype to add a shuffle method to the array object
-	var i = this.length, j, temp;
-	while (--i > 0) {
-		j = Math.floor(Math.random() * (i+1) );
-		temp = this[j];
-		this[j] = this[i];
-		this[i] = temp;
-	}
-};
 
 function newBoard() {
 
@@ -82,9 +57,8 @@ function newBoard() {
 	tiles_flipped = 0;
 	game_started = false;
 	board_layout = currentLayout();
-	memory_array = tilesForLayout(board_layout);
+	memory_array = shuffle(tilesForLayout(board_layout));
 	var output = '';
-	memory_array.memory_tile_shuffle();
 	for (var i = 0; i < memory_array.length; i++) {
 		
 		output += '<div id="tile_' + i +'" onclick="memoryFlipTile(this, \'' + memory_array[i] + '\')"></div>';
@@ -115,7 +89,7 @@ function memoryFlipTile (tile, val) {
 			//Compare values of the flipped tiles and change the points accordingly
 			if (memory_values[0] == memory_values[1]) {
 				tiles_flipped += 2;
-				points += 5;
+				points = pointsAfterMatch(points);
 				localStorage.setItem('points', points);
 				displayPoints();
 
@@ -143,13 +117,8 @@ function memoryFlipTile (tile, val) {
 					tile_2.style.background = 'url(sand.jpg) no-repeat';
 					tile_2.innerHTML = "";
 
-					if (points > 1) { 
-					points -= 2;
+					points = pointsAfterMismatch(points);
 					localStorage.setItem('points', points);
-					}else if (points == 1) { //points can't go below 0
-						points -= 1;
-						localStorage.setItem('points', points);
-					}
 					displayPoints();
 					//clear both arrays
 					memory_values = [];
@@ -169,37 +138,16 @@ function displayPoints() {
 }
 
 function loadHighScores() {
-	var scores;
-	try {
-		scores = JSON.parse(localStorage.getItem(HIGH_SCORE_KEY));
-	} catch (e) {
-		return [];
-	}
-	if (!Array.isArray(scores)) {
-		return [];
-	}
-	//Ignore anything that isn't a number, so a damaged value can't break the list
-	return scores.filter(function (score) {
-		return typeof score === 'number' && isFinite(score);
-	}).slice(0, HIGH_SCORE_COUNT);
+	return parseHighScores(localStorage.getItem(HIGH_SCORE_KEY));
 }
 
 //Returns the place (0 = first) the score got on the list, or -1 if it didn't make it
 function addHighScore(points) {
-	var scores = loadHighScores();
-
-	//A new score goes below any equal scores, so a tie never pushes an older score down
-	var place = 0;
-	while (place < scores.length && scores[place] >= points) {
-		place++;
+	var result = insertHighScore(loadHighScores(), points);
+	if (result.place != -1) {
+		localStorage.setItem(HIGH_SCORE_KEY, JSON.stringify(result.scores));
 	}
-	if (points <= 0 || place >= HIGH_SCORE_COUNT) {
-		return -1;
-	}
-
-	scores.splice(place, 0, points);
-	localStorage.setItem(HIGH_SCORE_KEY, JSON.stringify(scores.slice(0, HIGH_SCORE_COUNT)));
-	return place;
+	return result.place;
 }
 
 function displayHighScores() {
@@ -229,13 +177,7 @@ function displayHighScores() {
 function highScore () {
 	var points = parseInt(localStorage.getItem('points'), 10) || 0;
 	var place = addHighScore(points);
-	var placeNames = ['the highest score', '2nd place', '3rd place'];
 
 	displayHighScores();
-
-	if (place == -1) {
-		alert("You got " + points + " points. You did not make the high-score list.");
-	} else {
-		alert("Congratulations! You got " + placeNames[place] + "! You got " + points + " points.");
-	}
+	alert(highScoreMessage(points, place));
 }
