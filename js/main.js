@@ -12,6 +12,7 @@ var memory_values = [];
 var memory_tile_ids = [];
 var tiles_flipped = 0;
 
+// Keep these breakpoints in sync with the media queries in css/style.css.
 var mq_mobile = window.matchMedia( "(max-width: 668px)" );
 var mq_tablet = window.matchMedia( "(min-width: 669px) and (max-width: 1024px)" );
 var mq_desktop = window.matchMedia( "(min-width: 1025px)" );
