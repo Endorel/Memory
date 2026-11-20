@@ -7,32 +7,50 @@ window.addEventListener('load', displayHighScores);
 
 
 
-var memory_array = ['A', 'A', 'B', 'B', 'C', 'C', 'D', 'D', 'E', 'E', 'F', 'F', 'G', 'G', 'H', 'H', 
-			'I', 'I', 'J', 'J', 'K', 'K', 'L', 'L', 'M', 'M', 'N', 'N'];
+var memory_array = [];
 var memory_values = [];
 var memory_tile_ids = [];
 var tiles_flipped = 0;
+var board_layout = ''; //the layout ('mobile', 'tablet' or 'desktop') the current board was built for
+var game_started = false; //true once a tile on the current board has been turned over
 
-// Keep these breakpoints in sync with the media queries in css/style.css.
-var mq_mobile = window.matchMedia( "(max-width: 668px)" );
-var mq_tablet = window.matchMedia( "(min-width: 669px) and (max-width: 1024px)" );
+// Keep these breakpoints in sync with the media queries in css/style.css,
+// which also only use min-width, so every width maps to exactly one layout.
+var mq_tablet = window.matchMedia( "(min-width: 669px)" );
 var mq_desktop = window.matchMedia( "(min-width: 1025px)" );
 
-if (mq_mobile.matches) {
-	console.log('mobile');
-	memory_array = ['A', 'A', 'B', 'B', 'C', 'C', 'D', 'D', 'E', 'E', 'F', 'F', 'G', 'G', 'H', 'H', 
-			'I', 'I', 'J', 'J']
-} else if (mq_tablet.matches) {
-	console.log('tablet');
-	memory_array = ['A', 'A', 'B', 'B', 'C', 'C', 'D', 'D', 'E', 'E', 'F', 'F', 'G', 'G', 'H', 'H', 
-			'I', 'I', 'J', 'J', 'K', 'K', 'L', 'L', 'M', 'M', 'N', 'N', 'O', 'O', 'P', 'P', 'Q', 'Q', 'R', 'R'];
-} else if (mq_desktop.matches) {
-	console.log('desktop');
+function currentLayout() {
+	if (mq_desktop.matches) {
+		return 'desktop';
+	} else if (mq_tablet.matches) {
+		return 'tablet';
+	}
+	return 'mobile';
+}
 
-	memory_array = ['A', 'A', 'B', 'B', 'C', 'C', 'D', 'D', 'E', 'E', 'F', 'F', 'G', 'G', 'H', 'H', 
+function tilesForLayout(layout) {
+	if (layout == 'desktop') {
+		return ['A', 'A', 'B', 'B', 'C', 'C', 'D', 'D', 'E', 'E', 'F', 'F', 'G', 'G', 'H', 'H',
 			'I', 'I', 'J', 'J', 'K', 'K', 'L', 'L', 'M', 'M', 'N', 'N', 'O', 'O', 'P', 'P', 'Q', 'Q',
 			 'R', 'R', 'S', 'S', 'T', 'T'];
-};
+	} else if (layout == 'tablet') {
+		return ['A', 'A', 'B', 'B', 'C', 'C', 'D', 'D', 'E', 'E', 'F', 'F', 'G', 'G', 'H', 'H',
+			'I', 'I', 'J', 'J', 'K', 'K', 'L', 'L', 'M', 'M', 'N', 'N', 'O', 'O', 'P', 'P', 'Q', 'Q', 'R', 'R'];
+	}
+	return ['A', 'A', 'B', 'B', 'C', 'C', 'D', 'D', 'E', 'E', 'F', 'F', 'G', 'G', 'H', 'H',
+		'I', 'I', 'J', 'J'];
+}
+
+//When the window is resized or the device rotated into another layout, build a
+//board with the right number of tiles. A game in progress is left alone so no
+//progress is lost; the next board will use the new layout.
+function onLayoutChange() {
+	if (currentLayout() != board_layout && !game_started) {
+		newBoard();
+	}
+}
+mq_tablet.addEventListener('change', onLayoutChange);
+mq_desktop.addEventListener('change', onLayoutChange);
 
 //High scores are kept between visits as a JSON array of numbers, highest first
 var HIGH_SCORE_KEY = 'highscores';
@@ -60,8 +78,11 @@ function newBoard() {
 	localStorage.setItem('points', 0);
 	displayPoints();
 
-	//Create a new board
+	//Create a new board sized for the current layout
 	tiles_flipped = 0;
+	game_started = false;
+	board_layout = currentLayout();
+	memory_array = tilesForLayout(board_layout);
 	var output = '';
 	memory_array.memory_tile_shuffle();
 	for (var i = 0; i < memory_array.length; i++) {
@@ -80,6 +101,7 @@ function memoryFlipTile (tile, val) {
 
 	//Check the number of tiles that are flipped, 1 or 2
 	if (tile.innerHTML == "" && memory_values.length < 2) {
+		game_started = true;
 		tile.style.background = '#FFF';
 		tile.innerHTML = val;
 		if (memory_values.length == 0) {
